@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🌈 My Weekly To-Do · 12 yr old</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0;
+            font-family: 'Segoe UI', 'Comic Sans MS', 'Chalkboard SE', 'Quicksand', sans-serif; }
+        body {
+            background: linear-gradient(145deg, #ffe9f4 0%, #d9e6ff 100%);
+            min-height: 100vh; padding: 16px 12px 30px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        h1 { font-size: 2.2rem; color: #4a2c6b; text-shadow: 4px 4px 0 #ffb6e6;
+             letter-spacing: 1px; margin-bottom: 8px; text-align: center;
+             display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .subhead { background: #fff0f9; padding: 8px 18px; border-radius: 60px;
+            box-shadow: 0 6px 0 #d9b0d0; color: #5e2e5e; font-weight: 600;
+            margin-bottom: 20px; font-size: 1.05rem; border: 2px solid #ffb3d9; text-align: center; }
+        .week-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+            width: 100%; max-width: 1400px; }
+        .day-card {
+            background: #fffffffa; border-radius: 36px 36px 28px 28px;
+            padding: 12px 8px 16px; width: 285px; min-width: 260px;
+            flex: 0 0 auto; box-shadow: 0 12px 0 rgba(0,0,0,0.12), 0 8px 20px rgba(147,112,219,0.2);
+            border: 3px solid #fff; transition: transform 0.1s; position: relative;
+        }
+        .day-card:nth-child(1) { background: #fff0f7; }
+        .day-card:nth-child(2) { background: #f2f0ff; }
+        .day-card:nth-child(3) { background: #eef7ff; }
+        .day-card:nth-child(4) { background: #e9fcf1; }
+        .day-card:nth-child(5) { background: #fff7e0; }
+        .day-card:nth-child(6) { background: #ffe9e9; }
+        .day-card:nth-child(7) { background: #f0e9ff; }
+
+        .day-card.perfect-day {
+            box-shadow: 0 12px 0 rgba(201,162,39,0.5), 0 0 0 4px #ffd84d, 0 8px 25px rgba(255,216,77,0.6);
+            border: 3px solid #ffd84d;
+        }
+        .day-header { font-size: 1.5rem; font-weight: 800; text-align: center;
+            padding: 8px 0 4px; color: #3d2a5c; letter-spacing: 0.5px;
+            text-shadow: 2px 2px 0 #ffcdff; display: flex; align-items: center;
+            justify-content: center; gap: 6px; border-bottom: 3px dashed #c4a2e0; margin-bottom: 4px; }
+        .day-header .star { font-size: 1.6rem; opacity: 0; transition: 0.4s; }
+        .day-header .star.show { opacity: 1; animation: starPop 0.6s ease; }
+        @keyframes starPop {
+            0% { transform: scale(0) rotate(-180deg); }
+            60% { transform: scale(1.4) rotate(15deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+        .day-progress { text-align: center; font-size: 0.8rem; font-weight: 700;
+            color: #7a5c9e; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .day-progress.complete { color: #c9a227; }
+
+        .subjects-container { display: flex; flex-direction: column; gap: 6px; }
+        .subject-row { display: flex; align-items: center; justify-content: space-between;
+            background: #ffffffd9; border-radius: 60px; padding: 4px 4px 4px 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1.5px solid #f0e6ff; }
+        .subject-name {
+            font-weight: 600; font-size: 0.85rem; color: #2e1a4a;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 82px; cursor: pointer; padding: 4px 2px; border-radius: 6px;
+            transition: 0.15s; background: transparent; border: none; text-align: left;
+            font-family: inherit;
+        }
+        .subject-name:hover { background: #f3e9ff; }
+        .subject-name:focus { outline: 2px solid #bf8cff; background: #fff; }
+        .task-input {
+            border: none; background: #f9f3ff; border-radius: 40px;
+            padding: 8px 10px; font-size: 0.82rem; width: 105px;
+            font-family: 'Quicksand', 'Segoe UI', sans-serif; font-weight: 500;
+            color: #321f4a; outline: 2px solid transparent; transition: 0.15s;
+            border: 1px solid #e2c7ff;
+        }
+        .task-input:focus { outline: 2px solid #bf8cff; background: #ffffff; width: 115px; }
+        .task-input::placeholder { color: #b29bc9; font-size: 0.72rem; }
+
+        .check-btn {
+            background: #c1f0c1; border: none; border-radius: 50%;
+            width: 40px; height: 40px; font-size: 1.4rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 0 #7d9e7d;
+            transition: all 0.08s; border: 2px solid white;
+            color: #2a5c2a; flex-shrink: 0; padding: 0; line-height: 1;
+        }
+        .check-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #7d9e7d; }
+        .check-btn.done { background: #ffe485; box-shadow: 0 4px 0 #c9a227; color: #7a5c00; }
+
+        /* celebration overlay */
+        .celebration-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; display: flex; align-items: center; justify-content: center;
+            z-index: 9999; visibility: hidden; }
+        .celebration-overlay.active { visibility: visible; animation: popFade 1.8s ease forwards; }
+        .confetti-burst { font-size: 5rem; text-shadow: 0 0 20px gold;
+            animation: floatUp 1.6s ease-out;
+            background: radial-gradient(circle, #fff7b0, transparent 70%);
+            padding: 40px; border-radius: 50%; display: flex; gap: 20px;
+            flex-wrap: wrap; justify-content: center; align-items: center; color: #ff4d6d; }
+        @keyframes popFade {
+            0% { opacity: 0; transform: scale(0.7); }
+            20% { opacity: 1; transform: scale(1.1); }
+            40% { transform: scale(1); }
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(30px) rotate(-5deg); opacity: 0; }
+            20% { opacity: 1; transform: translateY(-10px) rotate(5deg); }
+            60% { transform: translateY(-30px) rotate(-3deg); }
+            100% { transform: translateY(-80px) rotate(10deg); opacity: 0; }
+        }
+
+        /* FULL DAY reward overlay — bigger and bolder */
+        .full-day-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(255,215,80,0.92), rgba(255,150,200,0.9));
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10000; visibility: hidden; pointer-events: none; text-align: center; padding: 20px;
+        }
+        .full-day-overlay.active { visibility: visible; animation: fullDayAnim 3s ease forwards; }
+        @keyframes fullDayAnim {
+            0% { opacity: 0; transform: scale(0.6); }
+            15% { opacity: 1; transform: scale(1.05); }
+            25% { transform: scale(1); }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: scale(1.1); }
+        }
+        .full-day-overlay .big-emoji { font-size: 6rem; animation: bounceBig 0.7s ease infinite alternate; }
+        @keyframes bounceBig {
+            from { transform: translateY(0) rotate(-5deg); }
+            to { transform: translateY(-18px) rotate(5deg); }
+        }
+        .full-day-overlay .msg { font-size: 2.4rem; font-weight: 900; color: #fff;
+            text-shadow: 3px 3px 0 #b34d00, 0 0 20px #fff; margin: 12px 0; letter-spacing: 1px; }
+        .full-day-overlay .sub-msg { font-size: 1.2rem; font-weight: 700; color: #5e2e5e;
+            background: #fff8d9; padding: 8px 22px; border-radius: 40px; box-shadow: 0 5px 0 #c9a227; }
+
+        .toast-sound-hint { position: fixed; bottom: 12px; right: 12px; background: #ffe0b0;
+            border-radius: 40px; padding: 8px 16px; font-size: 0.8rem; color: #6b4a1f;
+            border: 2px solid #ffb882; box-shadow: 0 4px 0 #b87c3a; opacity: 0.8;
+            pointer-events: none; z-index: 1000; font-weight: 600; }
+
+        .reset-area { margin-top: 30px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+        .reset-btn { background: #f4d9ff; border: none; padding: 12px 28px; border-radius: 60px;
+            font-weight: 700; font-size: 1.1rem; color: #4c2a6b; box-shadow: 0 8px 0 #b696d0;
+            cursor: pointer; transition: all 0.08s; border: 2px solid white;
+            display: flex; align-items: center; gap: 8px; }
+        .reset-btn:active { transform: translateY(5px); box-shadow: 0 3px 0 #b696d0; }
+        .footer-note { margin-top: 18px; font-size: 0.95rem; color: #4f3a6b; background: #ffe9fc;
+            padding: 8px 24px; border-radius: 40px; border: 2px solid #ffb3e0; text-align: center; }
+
+        @media (max-width: 700px) {
+            .day-card { width: 100%; max-width: 400px; }
+            .task-input { width: 110px; }
+            .subject-name { max-width: 88px; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <h1><span>📋✨</span> My Weekly To-Do <span>🌈🎀</span></h1>
+    <div class="subhead">
+        ⭐ Tap a subject name to rename it · Tap ✅ to finish ⭐
+    </div>
+
+    <div class="week-grid" id="weekGrid"></div>
+
+    <div class="reset-area">
+        <button class="reset-btn" id="resetAllBtn">🧹 Reset all tasks</button>
+    </div>
+    <div class="footer-note">
+        💖 Complete all 10 in a day to unlock a golden reward! 🏆
+    </div>
+
+    <div class="celebration-overlay" id="celebration">
+        <div class="confetti-burst" id="confettiBurst">🎉🎊🥳✨🎈</div>
+    </div>
+
+    <div class="full-day-overlay" id="fullDayOverlay">
+        <div class="big-emoji" id="fullDayEmoji">🏆</div>
+        <div class="msg" id="fullDayMsg">PERFECT DAY!</div>
+        <div class="sub-msg" id="fullDaySubMsg">You did all 10! Amazing!</div>
+    </div>
+
+    <div class="toast-sound-hint">🔊 sound on</div>
+
+    <script>
+        (function(){
+            const DAYS = [
+                { name: 'Monday', emoji: '🌸' }, { name: 'Tuesday', emoji: '🌼' },
+                { name: 'Wednesday', emoji: '🌻' }, { name: 'Thursday', emoji: '🍀' },
+                { name: 'Friday', emoji: '⭐' }, { name: 'Saturday', emoji: '🌈' },
+                { name: 'Sunday', emoji: '🦄' }
+            ];
+
+            // DEFAULT subject names — she can rename them, and the change applies to all days
+            const DEFAULT_SUBJECTS = [
+                'Math', 'English', 'Science', 'History', 'Geography',
+                'Art', 'Music', 'PE', 'Spanish', 'Computing'
+            ];
+            let subjectNames = [...DEFAULT_SUBJECTS];
+
+            let tasks = [];
+            let doneStates = [];
+
+            function initEmptyData() {
+                tasks = Array(7).fill().map(() => Array(10).fill(''));
+                doneStates = Array(7).fill().map(() => Array(10).fill(false));
+            }
+            initEmptyData();
+
+            // --- sounds ---
+            function playBeep(freq = 880, duration = 0.1, type = 'sine', vol = 0.15) {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = type; osc.frequency.value = freq;
+                    gain.gain.value = vol;
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+                    osc.stop(ctx.currentTime + duration);
+                } catch (e) {}
+            }
+
+            function playCelebrationSound() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const now = ctx.currentTime;
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, i) => {
+                        const osc = ctx.createOscillator(); const g = ctx.createGain();
+                        osc.type = 'triangle'; osc.frequency.value = freq;
+                        g.gain.setValueAtTime(0.12, now + i * 0.09);
+                        g.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.09 + 0.4);
+                        osc.connect(g); g.connect(ctx.destination);
+                        osc.start(now + i * 0.09); osc.stop(now + i * 0.09 + 0.4);
+                    });
+                } catch (e) {}
+            }
+
+            // GRAND fanfare for a perfect day
+            function playFanfare() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const now = ctx.currentTime;
+                    const melody = [
+                        [523.25, 0], [523.25, 0.15], [523.25, 0.30], [659.25, 0.45],
+                        [783.99, 0.60], [1046.50, 0.85], [1046.50, 1.05], [1318.51, 1.20]
+                    ];
+                    melody.forEach(([freq, t]) => {
+                        const osc = ctx.createOscillator(); const g = ctx.createGain();
+                        osc.type = 'triangle'; osc.frequency.value = freq;
+                        g.gain.setValueAtTime(0.14, now + t);
+                        g.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.5);
+                        osc.connect(g); g.connect(ctx.destination);
+                        osc.start(now + t); osc.stop(now + t + 0.5);
+                    });
+                } catch (e) {}
+            }
+
+            // --- storage ---
+            function saveToStorage() {
+                try {
+                    localStorage.setItem('weeklyTasks_12yo', JSON.stringify(tasks));
+                    localStorage.setItem('weeklyDone_12yo', JSON.stringify(doneStates));
+                    localStorage.setItem('weeklySubjects_12yo', JSON.stringify(subjectNames));
+                } catch (e) {}
+            }
+
+            function loadFromStorage() {
+                try {
+                    const sT = localStorage.getItem('weeklyTasks_12yo');
+                    const sD = localStorage.getItem('weeklyDone_12yo');
+                    const sS = localStorage.getItem('weeklySubjects_12yo');
+                    if (sT && sD) {
+                        const pT = JSON.parse(sT); const pD = JSON.parse(sD);
+                        if (Array.isArray(pT) && pT.length === 7 && Array.isArray(pD) && pD.length === 7) {
+                            for (let d = 0; d < 7; d++) {
+                                tasks[d] = (pT[d] && pT[d].length === 10) ? pT[d] : Array(10).fill('');
+                                doneStates[d] = (pD[d] && pD[d].length === 10) ? pD[d] : Array(10).fill(false);
+                            }
+                        }
+                    }
+                    if (sS) {
+                        const pS = JSON.parse(sS);
+                        if (Array.isArray(pS) && pS.length === 10) subjectNames = pS;
+                    }
+                } catch (e) {}
+            }
+
+            // --- celebration animations ---
+            const celebrationOverlay = document.getElementById('celebration');
+            const confettiBurst = document.getElementById('confettiBurst');
+            const fullDayOverlay = document.getElementById('fullDayOverlay');
+            const fullDayEmoji = document.getElementById('fullDayEmoji');
+            const fullDayMsg = document.getElementById('fullDayMsg');
+            const fullDaySubMsg = document.getElementById('fullDaySubMsg');
+
+            function celebrate() {
+                playCelebrationSound();
+                const emojis = ['🎉','🎊','🥳','✨','🎈','🌟','💖','⭐','🌈','🍭','🦄','🌸'];
+                let html = '';
+                for (let i = 0; i < 12; i++) html += emojis[Math.floor(Math.random() * emojis.length)];
+                confettiBurst.textContent = html;
+                celebrationOverlay.classList.remove('active');
+                void celebrationOverlay.offsetWidth;
+                celebrationOverlay.classList.add('active');
+                playBeep(1200, 0.08, 'sine');
+                setTimeout(() => celebrationOverlay.classList.remove('active'), 1800);
+            }
+
+            const fullDayRewards = [
+                { emoji: '🏆', msg: 'PERFECT DAY!', sub: 'You did all 10! Amazing!' },
+                { emoji: '🌟', msg: 'SUPERSTAR!', sub: 'Every single task done!' },
+                { emoji: '🎉', msg: 'FULL HOUSE!', sub: 'You crushed it today!' },
+                { emoji: '🦄', msg: 'UNICORN DAY!', sub: 'Magical effort — all done!' },
+                { emoji: '👑', msg: 'QUEEN OF TODAY!', sub: 'All 10 complete — wow!' }
+            ];
+
+            function celebrateFullDay() {
+                playFanfare();
+                const r = fullDayRewards[Math.floor(Math.random() * fullDayRewards.length)];
+                fullDayEmoji.textContent = r.emoji;
+                fullDayMsg.textContent = r.msg;
+                fullDaySubMsg.textContent = r.sub;
+                fullDayOverlay.classList.remove('active');
+                void fullDayOverlay.offsetWidth;
+                fullDayOverlay.classList.add('active');
+                setTimeout(() => fullDayOverlay.classList.remove('active'), 3200);
+            }
+
+            // --- render ---
+            const weekGrid = document.getElementById('weekGrid');
+
+            function renderAll() {
+                weekGrid.innerHTML = '';
+                for (let d = 0; d < 7; d++) {
+                    const day = DAYS[d];
+                    const card = document.createElement('div');
+                    card.className = 'day-card';
+                    card.dataset.dayIndex = d;
+
+                    // header
+                    const header = document.createElement('div');
+                    header.className = 'day-header';
+                    header.innerHTML = `<span>${day.emoji}</span> ${day.name} <span class="star" id="star-${d}">🌟</span>`;
+                    card.appendChild(header);
+
+                    // progress counter
+                    const progress = document.createElement('div');
+                    progress.className = 'day-progress';
+                    progress.id = `progress-${d}`;
+                    card.appendChild(progress);
+
+                    const subjContainer = document.createElement('div');
+                    subjContainer.className = 'subjects-container';
+
+                    for (let s = 0; s < 10; s++) {
+                        const row = document.createElement('div');
+                        row.className = 'subject-row';
+
+                        // editable subject name (contenteditable)
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'subject-name';
+                        nameSpan.textContent = subjectNames[s] || 'Subject';
+                        nameSpan.contentEditable = 'true';
+                        nameSpan.spellcheck = false;
+                        nameSpan.dataset.subj = s;
+                        nameSpan.title = 'Tap to rename';
+
+                        nameSpan.addEventListener('blur', (e) => {
+                            const subjIdx = parseInt(e.target.dataset.subj);
+                            let v = e.target.textContent.trim();
+                            if (!v) v = DEFAULT_SUBJECTS[subjIdx];
+                            e.target.textContent = v;
+                            subjectNames[subjIdx] = v;
+                            // update every day's row name in real time
+                            document.querySelectorAll(`.subject-name[data-subj="${subjIdx}"]`).forEach(el => {
+                                if (el !== e.target) el.textContent = v;
+                            });
+                            saveToStorage();
+                            playBeep(700, 0.06, 'sine', 0.08);
+                        });
+
+                        nameSpan.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
+                        });
+
+                        // task input
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'task-input';
+                        input.placeholder = 'to-do...';
+                        input.value = tasks[d][s] || '';
+                        input.dataset.day = d;
+                        input.dataset.subj = s;
+                        input.addEventListener('input', (e) => {
+                            const di = parseInt(e.target.dataset.day);
+                            const si = parseInt(e.target.dataset.subj);
+                            tasks[di][si] = e.target.value;
+                            saveToStorage();
+                        });
+                        input.addEventListener('click', (e) => e.stopPropagation());
+
+                        // check button
+                        const checkBtn = document.createElement('button');
+                        checkBtn.className = 'check-btn';
+                        if (doneStates[d][s]) { checkBtn.classList.add('done'); checkBtn.textContent = '✅'; }
+                        else { checkBtn.textContent = '✔️'; }
+                        checkBtn.dataset.day = d;
+                        checkBtn.dataset.subj = s;
+
+                        checkBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const di = parseInt(e.target.dataset.day);
+                            const si = parseInt(e.target.dataset.subj);
+                            const newDone = !doneStates[di][si];
+                            doneStates[di][si] = newDone;
+
+                            if (newDone) {
+                                e.target.classList.add('done');
+                                e.target.textContent = '✅';
+                                playBeep(880, 0.1, 'sine');
+                                celebrate();
+                            } else {
+                                e.target.classList.remove('done');
+                                e.target.textContent = '✔️';
+                                playBeep(400, 0.1, 'sine');
+                            }
+                            saveToStorage();
+                            updateDayStatus(di);
+                        });
+
+                        row.appendChild(nameSpan);
+                        row.appendChild(input);
+                        row.appendChild(checkBtn);
+                        subjContainer.appendChild(row);
+                    }
+
+                    card.appendChild(subjContainer);
+                    weekGrid.appendChild(card);
+                    updateDayStatus(d);
+                }
+            }
+
+            // update progress + star + perfect-day glow
+            function updateDayStatus(dayIdx) {
+                const doneCount = doneStates[dayIdx].filter(Boolean).length;
+                const progressEl = document.getElementById(`progress-${dayIdx}`);
+                const starEl = document.getElementById(`star-${dayIdx}`);
+                const card = document.querySelector(`.day-card[data-day-index="${dayIdx}"]`);
+                if (!progressEl || !starEl || !card) return;
+
+                progressEl.textContent = `${doneCount}/10 done`;
+                const wasPerfect = card.classList.contains('perfect-day');
+
+                if (doneCount === 10) {
+                    progressEl.classList.add('complete');
+                    progressEl.textContent = `🏆 10/10 COMPLETE!`;
+                    starEl.classList.add('show');
+                    card.classList.add('perfect-day');
+                    if (!wasPerfect) {
+                        celebrateFullDay();
+                    }
+                } else {
+                    progressEl.classList.remove('complete');
+                    starEl.classList.remove('show');
+                    card.classList.remove('perfect-day');
+                }
+            }
+
+            // reset
+            document.getElementById('resetAllBtn').addEventListener('click', () => {
+                if (confirm('Reset all tasks and checkmarks? 🧹\n(Subject names will stay.)')) {
+                    initEmptyData();
+                    saveToStorage();
+                    renderAll();
+                    playBeep(600, 0.1, 'sawtooth');
+                }
+            });
+
+            // init
+            loadFromStorage();
+            renderAll();
+
+            window.addEventListener('beforeunload', saveToStorage);
+
+            // unlock audio context with first tap
+            let welcomed = false;
+            document.body.addEventListener('click', function() {
+                if (!welcomed) { playBeep(660, 0.08, 'sine'); welcomed = true; }
+            }, { once: false });
+        })();
+    </script>
+</body>
+</html>
